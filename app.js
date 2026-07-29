@@ -36,6 +36,11 @@ function formatDistance(km) {
   return km.toFixed(1).replace(/\.0$/, "") + " ק\"מ";
 }
 
+function normalizeUrl(url) {
+  if (!url) return null;
+  return /^https?:\/\//i.test(url) ? url : "https://" + url;
+}
+
 // ===== Load data =====
 async function loadPlaces() {
   const res = await fetch("places.json");
@@ -206,7 +211,7 @@ function openDetail(p) {
       ${ratingCard("טריפאדוויזר", p.ta_score, p.ta_count)}
       ${ratingCard("easy", p.easy_score, p.easy_count)}
     </div>
-    ${p.link ? `<a class="sheet-link-btn" href="${p.link}" target="_blank" rel="noopener">קישור למקום</a>` : ""}
+    ${p.link ? `<a class="sheet-link-btn" href="${normalizeUrl(p.link)}" target="_blank" rel="noopener">קישור למקום</a>` : ""}
     <a class="sheet-nav-btn" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}" target="_blank" rel="noopener">ניווט וייז / גוגל מפות</a>
   `;
   document.getElementById("sheet-content").innerHTML = html;
