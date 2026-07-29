@@ -36,6 +36,19 @@ function formatDistance(km) {
   return km.toFixed(1).replace(/\.0$/, "") + " ק\"מ";
 }
 
+function accentColor() {
+  return getComputedStyle(document.documentElement).getPropertyValue("--accent").trim();
+}
+
+function applyTimeTheme() {
+  const hour = new Date().getHours();
+  const isDay = hour >= 6 && hour < 19; // 06:00–19:00 = day, otherwise night
+  document.documentElement.dataset.theme = isDay ? "day" : "night";
+  if (radiusCircle) {
+    radiusCircle.setStyle({ color: accentColor(), fillColor: accentColor() });
+  }
+}
+
 function normalizeUrl(url) {
   if (!url) return null;
   return /^https?:\/\//i.test(url) ? url : "https://" + url;
@@ -130,8 +143,8 @@ function centerOnUser() {
   if (radiusCircle) map.removeLayer(radiusCircle);
   radiusCircle = L.circle(userLatLng, {
     radius: radiusKm * 1000,
-    color: "#c8552d",
-    fillColor: "#c8552d",
+    color: accentColor(),
+    fillColor: accentColor(),
     fillOpacity: 0.08,
     weight: 1.5
   }).addTo(map);
@@ -178,15 +191,23 @@ function renderMarkers() {
 }
 
 // ===== Detail sheet =====
-function ratingCard(source, value, count) {
-  if (value === null || value === undefined) {
-    return `<div class="rating-card empty"><div class="source">${source}</div><div class="value">—</div></div>`;
-  }
+const RATING_BADGES = {
+  google: { letter: "G", bg: "#4285F4", fg: "#ffffff" },
+  wolt:   { letter: "W", bg: "#00C2E8", fg: "#0b3b46" },
+  ta:     { letter: "T", bg: "#00AF87", fg: "#ffffff" },
+  easy:   { letter: "E", bg: "#8B5CF6", fg: "#ffffff" }
+};
+
+function ratingCard(key, value, count) {
+  if (value === null || value === undefined || value === "") return "";
+  const b = RATING_BADGES[key];
   const countText = count ? `${count.toLocaleString("he-IL")} דירוגים` : "";
   return `<div class="rating-card">
-    <div class="source">${source}</div>
-    <div class="value">${value}</div>
-    <div class="count">${countText}</div>
+    <div class="badge" style="background:${b.bg};color:${b.fg}">${b.letter}</div>
+    <div class="rc-info">
+      <div class="value">${value}</div>
+      <div class="count">${countText}</div>
+    </div>
   </div>`;
 }
 
@@ -195,6 +216,13 @@ function openDetail(p) {
   const dist = p._distance !== undefined
     ? formatDistance(p._distance)
     : (userLatLng ? formatDistance(haversineKm(userLatLng[0], userLatLng[1], p.lat, p.lon)) : "");
+
+  const ratingsHtml = [
+    ratingCard("google", p.google_rating, p.google_count),
+    ratingCard("wolt", p.wolt, null),
+    ratingCard("ta", p.ta_score, p.ta_count),
+    ratingCard("easy", p.easy_score, p.easy_count)
+  ].filter(Boolean).join("");
 
   const html = `
     <div class="sheet-title-row">
@@ -205,14 +233,9 @@ function openDetail(p) {
     <div class="sheet-meta-row">
       <div class="meta-pill distance">📍 ${dist}</div>
     </div>
-    <div class="ratings-grid">
-      ${ratingCard("גוגל", p.google_rating, p.google_count)}
-      ${ratingCard("וואלט", p.wolt, null)}
-      ${ratingCard("טריפאדוויזר", p.ta_score, p.ta_count)}
-      ${ratingCard("easy", p.easy_score, p.easy_count)}
-    </div>
+    ${ratingsHtml ? `<div class="ratings-grid">${ratingsHtml}</div>` : ""}
     ${p.link ? `<a class="sheet-link-btn" href="${normalizeUrl(p.link)}" target="_blank" rel="noopener">קישור למקום</a>` : ""}
-    <a class="sheet-nav-btn" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}" target="_blank" rel="noopener">ניווט וייז / גוגל מפות</a>
+    <a class="sheet-nav-btn" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}" target="_blank" rel="noopener">GO</a>
   `;
   document.getElementById("sheet-content").innerHTML = html;
   document.getElementById("detail-sheet").classList.remove("hidden");
@@ -236,6 +259,9 @@ function setRadius(value) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  applyTimeTheme();
+  setInterval(applyTimeTheme, 15 * 60 * 1000); // re-check every 15 min in case day/night flips mid-session
+
   await loadPlaces();
   buildCategoryGrid();
 
