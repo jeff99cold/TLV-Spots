@@ -1,15 +1,35 @@
 :root {
-  --bg: #faf7f2;
+  /* Day theme — modern minimal */
+  --bg: #f6f7f9;
   --card: #ffffff;
-  --ink: #1f1b16;
-  --ink-soft: #6b6259;
-  --accent: #c8552d;
-  --accent-soft: #f3d9c9;
-  --line: #e9e2d8;
-  --green: #3f7a4d;
-  --red: #b4442e;
-  --radius: 16px;
+  --ink: #16181c;
+  --ink-soft: #6b7280;
+  --accent: #2563eb;
+  --accent-soft: #dbe8ff;
+  --line: #e5e7eb;
+  --green: #16a34a;
+  --red: #dc2626;
+  --user-color: #2563eb;
+  --user-glow: rgba(37,99,235,0.25);
+  --pin-border: #ffffff;
+  --radius: 14px;
   font-size: 16px;
+}
+
+:root[data-theme="night"] {
+  /* Night theme — dark, neon accents */
+  --bg: #101116;
+  --card: #1b1d24;
+  --ink: #f2f2f5;
+  --ink-soft: #9a9aa8;
+  --accent: #ff5fa2;
+  --accent-soft: #3a2030;
+  --line: #2b2d36;
+  --green: #34d399;
+  --red: #f87171;
+  --user-color: #ffb84d;
+  --user-glow: rgba(255,184,77,0.3);
+  --pin-border: #1b1d24;
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -23,6 +43,7 @@ html, body {
   background: var(--bg);
   color: var(--ink);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, "Helvetica Neue", sans-serif;
+  transition: background .3s ease, color .3s ease;
 }
 
 .screen {
@@ -39,7 +60,7 @@ html, body {
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: linear-gradient(180deg, #fff 0%, var(--bg) 60%);
+  background: linear-gradient(180deg, var(--card) 0%, var(--bg) 60%);
 }
 .picker-inner {
   width: 100%;
@@ -191,7 +212,7 @@ html, body {
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 6px rgba(0,0,0,0.35);
-  border: 2px solid #fff;
+  border: 2px solid var(--pin-border);
 }
 .place-pin span {
   transform: rotate(45deg);
@@ -201,9 +222,9 @@ html, body {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #2b6ef2;
-  border: 3px solid #fff;
-  box-shadow: 0 0 0 4px rgba(43,110,242,0.25);
+  background: var(--user-color);
+  border: 3px solid var(--pin-border);
+  box-shadow: 0 0 0 4px var(--user-glow);
 }
 
 /* ===== Detail bottom sheet ===== */
@@ -298,21 +319,32 @@ html, body {
   border-radius: 12px;
   padding: 10px 12px;
   border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
-.rating-card .source {
-  font-size: 0.75rem;
-  color: var(--ink-soft);
-  margin-bottom: 2px;
-}
-.rating-card .value {
-  font-size: 1.1rem;
+.rating-card .badge {
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
   font-weight: 700;
 }
-.rating-card .count {
-  font-size: 0.72rem;
-  color: var(--ink-soft);
+.rating-card .rc-info { min-width: 0; }
+.rating-card .value {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.2;
 }
-.rating-card.empty { opacity: 0.4; }
+.rating-card .count {
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
 
 .sheet-link-btn {
   display: block;
@@ -335,5 +367,6 @@ html, body {
   background: var(--accent);
   color: #fff;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 800;
+  letter-spacing: 1px;
 }
