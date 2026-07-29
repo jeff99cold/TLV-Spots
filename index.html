@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>מקומות תל אביב</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===== Screen 1: Category picker ===== -->
+<div id="picker-screen" class="screen">
+  <div class="picker-inner">
+    <h1>מקומות בתל אביב</h1>
+    <p class="subtitle">מה בא לך היום?</p>
+
+    <div id="category-grid" class="category-grid"></div>
+
+    <div class="radius-row">
+      <label for="radius-select">רדיוס חיפוש</label>
+      <select id="radius-select">
+        <option value="0.5" selected>0.5 ק"מ</option>
+        <option value="1">1 ק"מ</option>
+        <option value="2">2 ק"מ</option>
+      </select>
+    </div>
+
+    <button id="find-btn" class="primary-btn" disabled>מצא מקומות לידי</button>
+    <p id="picker-status" class="status-text"></p>
+  </div>
+</div>
+
+<!-- ===== Screen 2: Map ===== -->
+<div id="map-screen" class="screen hidden">
+  <div id="map"></div>
+
+  <div id="top-bar">
+    <button id="back-btn" class="icon-btn" aria-label="חזרה">☰ סינון</button>
+    <div id="result-count" class="pill"></div>
+    <div class="radius-row compact">
+      <select id="radius-select-2">
+        <option value="0.5">0.5 ק"מ</option>
+        <option value="1">1 ק"מ</option>
+        <option value="2">2 ק"מ</option>
+      </select>
+    </div>
+  </div>
+
+  <button id="locate-btn" class="icon-btn locate-fab" aria-label="המיקום שלי">📍</button>
+</div>
+
+<!-- ===== Detail bottom sheet ===== -->
+<div id="detail-sheet" class="sheet hidden">
+  <div class="sheet-handle"></div>
+  <button id="sheet-close" class="sheet-close" aria-label="סגור">✕</button>
+  <div id="sheet-content"></div>
+</div>
+<div id="sheet-backdrop" class="sheet-backdrop hidden"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
