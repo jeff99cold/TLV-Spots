@@ -234,6 +234,40 @@ function centerOnUser() {
   }).addTo(map);
 }
 
+// When two or more spots sit at (or very near) the same coordinates, their pins
+// stack exactly on top of each other and the ones underneath become unclickable.
+// This fans overlapping pins out in a small circle in screen-pixel space (so the
+// separation looks right at any zoom level) while leaving the real p.lat/p.lon
+// — used for distance, GO, and share — untouched.
+function declutterPositions(matches) {
+  const positions = new Map();
+  const groups = new Map();
+
+  matches.forEach(p => {
+    const key = `${p.lat.toFixed(4)},${p.lon.toFixed(4)}`; // ~11m buckets
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(p);
+  });
+
+  groups.forEach(group => {
+    if (group.length === 1) {
+      positions.set(group[0], [group[0].lat, group[0].lon]);
+      return;
+    }
+    const center = map.latLngToLayerPoint([group[0].lat, group[0].lon]);
+    const radiusPx = 16;
+    const angleStep = (2 * Math.PI) / group.length;
+    group.forEach((p, i) => {
+      const angle = i * angleStep - Math.PI / 2;
+      const point = L.point(center.x + radiusPx * Math.cos(angle), center.y + radiusPx * Math.sin(angle));
+      const latlng = map.layerPointToLatLng(point);
+      positions.set(p, [latlng.lat, latlng.lng]);
+    });
+  });
+
+  return positions;
+}
+
 function renderMarkers() {
   markers.forEach(m => map.removeLayer(m.marker));
   markers = [];
@@ -248,6 +282,8 @@ function renderMarkers() {
     return d <= radiusKm;
   }).sort((a, b) => a._distance - b._distance);
 
+  const displayPositions = declutterPositions(matches);
+
   matches.forEach(p => {
     const icon = L.divIcon({
       className: "",
@@ -255,7 +291,7 @@ function renderMarkers() {
       iconSize: [34, 34],
       iconAnchor: [17, 34]
     });
-    const marker = L.marker([p.lat, p.lon], { icon }).addTo(map);
+    const marker = L.marker(displayPositions.get(p), { icon }).addTo(map);
     marker.on("click", () => openDetail(p));
     markers.push({ marker, place: p });
   });
@@ -309,18 +345,18 @@ function openDetail(p) {
   const html = `
     <div class="sheet-title-row">
       <h2 class="sheet-title">${p.name}</h2>
-      <button id="sheet-share-btn-el" class="sheet-share-btn" aria-label="שיתוף">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.8"/><circle cx="6" cy="12" r="2.8"/><circle cx="18" cy="19" r="2.8"/><path d="M8.5 10.5l7-4M8.5 13.5l7 4"/></svg>
-      </button>
     </div>
     <div class="sheet-cat"><span class="cat-icon" style="color:${categoryColor(p.category)}">${categoryIconSvg(p.category, 16)}</span> ${p.category}</div>
     <div class="sheet-address">${p.address || ""}</div>
     <div class="sheet-meta-row">
       <div class="meta-pill distance">📍 ${dist}</div>
+      <button id="sheet-share-btn-el" class="meta-pill share-pill" aria-label="שיתוף">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.8"/><circle cx="6" cy="12" r="2.8"/><circle cx="18" cy="19" r="2.8"/><path d="M8.5 10.5l7-4M8.5 13.5l7 4"/></svg>
+      </button>
     </div>
     ${ratingsHtml ? `<div class="ratings-grid">${ratingsHtml}</div>` : ""}
-    ${p.link ? `<a class="sheet-link-btn" href="${normalizeUrl(p.link)}" target="_blank" rel="noopener">קישור למקום</a>` : ""}
-    <a class="sheet-nav-btn" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}" target="_blank" rel="noopener">GO</a>
+    ${p.link ? `<a class="sheet-link-btn" href="${normalizeUrl(p.link)}" target="_blank" rel="noopener">חיבור</a>` : ""}
+    <a class="sheet-nav-btn" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}" target="_blank" rel="noopener">יאללללה</a>
   `;
   document.getElementById("sheet-content").innerHTML = html;
   document.getElementById("detail-sheet").classList.remove("hidden");
@@ -338,8 +374,11 @@ async function sharePlace(p) {
     `📍 ${p.name}`,
     [p.category, p.address].filter(Boolean).join(" — "),
     "",
-    `ניווט בגוגל מפות: ${mapsUrl}`,
-    `ניווט בוויז: ${wazeUrl}`
+    "ניווט בגוגל מפות:",
+    mapsUrl,
+    "",
+    "ניווט בוויז:",
+    wazeUrl
   ].join("\n");
 
   if (navigator.share) {

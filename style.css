@@ -329,20 +329,6 @@ html, body {
   font-weight: 700;
   margin: 0;
 }
-.sheet-share-btn {
-  flex-shrink: 0;
-  border: none;
-  background: var(--bg);
-  color: var(--ink-soft);
-  border-radius: 50%;
-  width: 34px;
-  height: 34px;
-  margin-top: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
 .sheet-cat {
   display: inline-flex;
   align-items: center;
@@ -376,6 +362,14 @@ html, body {
   font-size: 0.82rem;
 }
 .meta-pill.distance { background: var(--accent-soft); border-color: var(--accent); font-weight: 600; }
+.meta-pill.share-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-family: inherit;
+}
 
 .ratings-grid {
   display: grid;
