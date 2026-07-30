@@ -441,6 +441,73 @@ function closeDetail() {
   document.getElementById("sheet-backdrop").classList.add("hidden");
 }
 
+// ===== Suggest a new spot =====
+// Submissions are relayed through Formspree (a free static-site form-to-email
+// service) since this app has no backend of its own. Replace the placeholder
+// below with your real Formspree endpoint (formspree.io) once you've created one.
+const SPOT_SUBMIT_ENDPOINT = "https://formspree.io/f/REPLACE_WITH_YOUR_FORM_ID";
+
+function openAddSpotScreen() {
+  document.getElementById("picker-screen").classList.add("hidden");
+  document.getElementById("add-spot-screen").classList.remove("hidden");
+}
+
+function closeAddSpotScreen() {
+  document.getElementById("add-spot-screen").classList.add("hidden");
+  document.getElementById("picker-screen").classList.remove("hidden");
+}
+
+function searchSpotOnMaps() {
+  const query = document.getElementById("spot-search-input").value.trim();
+  if (!query) return;
+  window.open(`https://www.google.com/maps/search/${encodeURIComponent(query)}`, "_blank", "noopener");
+}
+
+async function submitNewSpot() {
+  const name = document.getElementById("spot-name-input").value.trim();
+  const address = document.getElementById("spot-address-input").value.trim();
+  const url = document.getElementById("spot-url-input").value.trim();
+  const status = document.getElementById("add-spot-status");
+
+  if (!name || !address) {
+    status.textContent = "נא למלא לפחות שם וכתובת";
+    return;
+  }
+
+  const submitBtn = document.getElementById("spot-submit-btn");
+  submitBtn.disabled = true;
+  status.textContent = "שולח...";
+
+  const formData = new FormData();
+  formData.append("name", name);
+  formData.append("address", address);
+  formData.append("maps_url", url);
+  formData.append("_subject", `new spot for spots - ${name}`);
+  formData.append("message", `שם המקום: ${name}\nכתובת: ${address}\nקישור מגוגל מפות: ${url || "לא צויין"}`);
+
+  try {
+    const response = await fetch(SPOT_SUBMIT_ENDPOINT, {
+      method: "POST",
+      headers: { "Accept": "application/json" },
+      body: formData
+    });
+    if (response.ok) {
+      status.textContent = "תודה! נבדוק ונוסיף בקרוב 🙌";
+      document.getElementById("spot-search-input").value = "";
+      document.getElementById("spot-name-input").value = "";
+      document.getElementById("spot-address-input").value = "";
+      document.getElementById("spot-url-input").value = "";
+      setTimeout(closeAddSpotScreen, 1600);
+    } else {
+      status.textContent = "משהו השתבש — נסו שוב בעוד רגע";
+    }
+  } catch (e) {
+    status.textContent = "משהו השתבש — נסו שוב בעוד רגע";
+  } finally {
+    submitBtn.disabled = false;
+  }
+}
+
 // ===== Wire up events =====
 function setRadius(value) {
   radiusKm = parseFloat(value);
@@ -490,4 +557,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("sheet-close").addEventListener("click", closeDetail);
   document.getElementById("sheet-backdrop").addEventListener("click", closeDetail);
   document.getElementById("share-app-btn").addEventListener("click", shareApp);
+  document.getElementById("add-spot-btn").addEventListener("click", openAddSpotScreen);
+  document.getElementById("add-spot-close").addEventListener("click", closeAddSpotScreen);
+  document.getElementById("spot-search-btn").addEventListener("click", searchSpotOnMaps);
+  document.getElementById("spot-submit-btn").addEventListener("click", submitNewSpot);
 });

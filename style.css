@@ -195,22 +195,103 @@ html, body {
   margin: 10px 0 0;
   opacity: 0.8;
 }
-.share-app-btn {
+.footer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 56px;
+  gap: 10px;
+}
+.footer-link {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
   background: none;
   border: none;
   color: var(--ink-soft);
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-family: inherit;
-  margin-top: 56px;
   padding: 10px 6px;
   cursor: pointer;
+  white-space: nowrap;
 }
-.share-app-btn svg {
+.footer-link svg {
   margin-inline-end: 6px;
+}
+
+/* ===== Add-spot screen ===== */
+#add-spot-screen {
+  background: var(--bg);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 24px;
+  overflow-y: auto;
+}
+.add-spot-inner {
+  width: 100%;
+  max-width: 460px;
+  position: relative;
+  padding-top: 44px;
+}
+.add-spot-title {
+  font-family: 'Rubik', -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-weight: 700;
+  font-size: 1.4rem;
+  text-align: center;
+  margin: 0 0 6px;
+  color: var(--ink);
+}
+.add-spot-subtitle {
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  margin: 0 0 24px;
+}
+.field-label {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  margin: 14px 0 6px;
+}
+.field-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1.5px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+.search-assist-row {
+  display: flex;
+  gap: 8px;
+}
+.search-assist-row input {
+  flex: 1;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1.5px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+.search-assist-btn {
+  flex-shrink: 0;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1.5px solid var(--accent);
+  background: none;
+  color: var(--accent);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.add-spot-submit {
+  margin-top: 24px;
 }
 
 /* ===== Map screen ===== */
@@ -445,7 +526,7 @@ html, body {
   color: var(--ink);
   text-decoration: none;
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 1.4rem;
   margin-bottom: 8px;
 }
 .sheet-nav-btn {
@@ -455,9 +536,10 @@ html, body {
   padding: 14px;
   border-radius: var(--radius);
   background: var(--accent);
-  color: #fff;
+  color: var(--btn-ink);
   text-decoration: none;
   font-weight: 800;
+  font-size: 1.4rem;
   letter-spacing: 1px;
 }
 

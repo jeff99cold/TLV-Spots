@@ -42,10 +42,43 @@
     <p id="picker-status" class="status-text"></p>
     <button id="skip-location-btn" class="text-link-btn hidden">דלגו ובחרו מיקום ידנית במרכז תל אביב</button>
     <p id="whatsapp-hint" class="hint-text hidden">💡 קיבלתם את הקישור בוואטסאפ? כדאי לפתוח בספארי/כרום כדי שהמיקום יעבוד</p>
-    <button id="share-app-btn" class="share-app-btn">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.8"/><circle cx="6" cy="12" r="2.8"/><circle cx="18" cy="19" r="2.8"/><path d="M8.5 10.5l7-4M8.5 13.5l7 4"/></svg>
-      <span>שיתוף האפליקציה</span>
-    </button>
+    <div class="footer-actions">
+      <button id="add-spot-btn" class="footer-link">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        <span>חייבים להוסיף את...</span>
+      </button>
+      <button id="share-app-btn" class="footer-link">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.8"/><circle cx="6" cy="12" r="2.8"/><circle cx="18" cy="19" r="2.8"/><path d="M8.5 10.5l7-4M8.5 13.5l7 4"/></svg>
+        <span>שיתוף Spots</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Screen 3: Suggest a new spot ===== -->
+<div id="add-spot-screen" class="screen hidden">
+  <div class="add-spot-inner">
+    <button id="add-spot-close" class="sheet-close" aria-label="סגור">✕</button>
+    <h2 class="add-spot-title">הוספת מקום חדש</h2>
+    <p class="add-spot-subtitle">מצאו את המקום בגוגל מפות, ואז מלאו את הפרטים כאן</p>
+
+    <label class="field-label" for="spot-search-input">שם המקום לחיפוש</label>
+    <div class="search-assist-row">
+      <input id="spot-search-input" type="text" placeholder="לדוגמה: קפה נטע, אבן גבירול">
+      <button id="spot-search-btn" class="search-assist-btn">חפשו במפות</button>
+    </div>
+
+    <label class="field-label" for="spot-name-input">שם המקום</label>
+    <input id="spot-name-input" class="field-input" type="text" placeholder="שם המקום">
+
+    <label class="field-label" for="spot-address-input">כתובת</label>
+    <input id="spot-address-input" class="field-input" type="text" placeholder="רחוב ומספר, תל אביב">
+
+    <label class="field-label" for="spot-url-input">קישור מגוגל מפות</label>
+    <input id="spot-url-input" class="field-input" type="url" placeholder="https://maps.google.com/...">
+
+    <button id="spot-submit-btn" class="primary-btn add-spot-submit">שליחה</button>
+    <p id="add-spot-status" class="status-text"></p>
   </div>
 </div>
 
