@@ -402,12 +402,17 @@ async function sharePlace(p) {
 // Shares the app itself (not a specific spot) — used by the button at the
 // bottom of the picker screen.
 async function shareApp() {
-  const appUrl = "https://jeff99cold.github.io/TLV-Spots/";
-  const text = ["גלו מקומות לאכול ולשתות בתל אביב עם TLV Spots 📍", appUrl].join("\n");
+  // A short redirect link instead of the raw GitHub Pages URL, so the
+  // username/host isn't visible when someone shares the app.
+  const appUrl = "https://tinyurl.com/tlv-spots-app";
+  const shareText = "שששש... לא מספרים על TLV Spots";
 
   if (navigator.share) {
     try {
-      await navigator.share({ title: "TLV Spots", text, url: appUrl });
+      // Pass the URL only via the dedicated `url` field, not inside `text` too —
+      // WhatsApp (and some other share targets) append the url field on its own
+      // line, so including it in text as well made the link show up twice.
+      await navigator.share({ title: "TLV Spots", text: shareText, url: appUrl });
     } catch (e) {
       // user cancelled the share sheet — nothing to do
     }
@@ -415,7 +420,7 @@ async function shareApp() {
   }
 
   try {
-    await navigator.clipboard.writeText(text);
+    await navigator.clipboard.writeText(`${shareText}\n${appUrl}`);
     showToast("הקישור הועתק — אפשר להדביק בוואטסאפ");
   } catch (e) {
     showToast("שיתוף לא נתמך במכשיר הזה");
@@ -464,13 +469,15 @@ function searchSpotOnMaps() {
 }
 
 async function submitNewSpot() {
-  const name = document.getElementById("spot-name-input").value.trim();
-  const address = document.getElementById("spot-address-input").value.trim();
+  // Only the Google Maps link is required — we deliberately don't make the
+  // user retype the name/address by hand. Whoever reviews the email opens
+  // the link and fills in the rest later.
+  const query = document.getElementById("spot-search-input").value.trim();
   const url = document.getElementById("spot-url-input").value.trim();
   const status = document.getElementById("add-spot-status");
 
-  if (!name || !address) {
-    status.textContent = "נא למלא לפחות שם וכתובת";
+  if (!url) {
+    status.textContent = "נא להדביק את הקישור מגוגל מפות";
     return;
   }
 
@@ -479,11 +486,10 @@ async function submitNewSpot() {
   status.textContent = "שולח...";
 
   const formData = new FormData();
-  formData.append("name", name);
-  formData.append("address", address);
+  formData.append("search_term", query);
   formData.append("maps_url", url);
-  formData.append("_subject", `new spot for spots - ${name}`);
-  formData.append("message", `שם המקום: ${name}\nכתובת: ${address}\nקישור מגוגל מפות: ${url || "לא צויין"}`);
+  formData.append("_subject", `new spot for spots${query ? " - " + query : ""}`);
+  formData.append("message", `מה שחיפשו: ${query || "לא צויין"}\nקישור מגוגל מפות: ${url}`);
 
   try {
     const response = await fetch(SPOT_SUBMIT_ENDPOINT, {
@@ -494,8 +500,6 @@ async function submitNewSpot() {
     if (response.ok) {
       status.textContent = "תודה! נבדוק ונוסיף בקרוב 🙌";
       document.getElementById("spot-search-input").value = "";
-      document.getElementById("spot-name-input").value = "";
-      document.getElementById("spot-address-input").value = "";
       document.getElementById("spot-url-input").value = "";
       setTimeout(closeAddSpotScreen, 1600);
     } else {
