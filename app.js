@@ -1,15 +1,35 @@
 // ===== Config =====
-const CATEGORY_EMOJI = {
-  "בית קפה": "☕",
-  "מסעדה": "🍽️",
-  "בר": "🍸",
-  "בר יינות": "🍷",
-  "גלידריה": "🍦",
-  "גלידריה וקינוחים": "🍨",
-  "אוכל רחוב": "🌯",
-  "מאפיה מעדנייה": "🥐",
-  "מיצים ושייקים": "🥤"
+// Minimal line-icon paths (24x24 viewBox) per category — rendered with currentColor
+// so they pick up the chip/pin/theme color automatically.
+const CATEGORY_ICONS = {
+  "בית קפה": `<rect x="5" y="9" width="11" height="8" rx="2"/><path d="M16 11h2a2 2 0 0 1 0 4h-2"/><path d="M8 5v2M11 5v2M14 5v2"/>`,
+  "מסעדה": `<path d="M6 2v7a2 2 0 0 0 2 2v11"/><path d="M6 2v4M8 2v4M10 2v4"/><path d="M17 2c-1.8 1.2-2 3.5-2 5.5 0 1.3.7 2.2 2 2.5v12"/>`,
+  "בר": `<path d="M4 4h16l-8 8-8-8z"/><path d="M12 12v8M8 20h8"/>`,
+  "גלידריה וקינוחים": `<circle cx="12" cy="7" r="4.5"/><path d="M8.2 10l3.8 11 3.8-11"/>`,
+  "אוכל רחוב": `<rect x="2" y="9" width="13" height="6" rx="1.5"/><path d="M15 11h4l2.5 2.5V15h-6.5"/><circle cx="6.5" cy="17" r="1.8"/><circle cx="16.5" cy="17" r="1.8"/>`,
+  "מאפיה מעדנייה": `<path d="M4 13c0-4.5 3.5-8 8-8s8 3.5 8 8-3.5 5-8 5-8-.5-8-5z"/><path d="M8.5 10.5l1 4M12 9.5v6M15.5 10.5l-1 4"/>`,
+  "מיצים ושייקים": `<path d="M6.5 8h11l-1.2 11.5a2 2 0 0 1-2 1.8h-4.6a2 2 0 0 1-2-1.8L6.5 8z"/><path d="M9.5 8V5.5a2.5 2.5 0 0 1 5 0V8"/><path d="M14 3.5l1-2"/>`
 };
+
+function categoryIconSvg(cat, size = 20) {
+  const path = CATEGORY_ICONS[cat] || `<circle cx="12" cy="12" r="8"/>`;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`;
+}
+
+// Each category gets its own color, used for chips, map pins, and the sheet icon.
+const CATEGORY_COLORS = {
+  "מסעדה": "#EF4444",
+  "בית קפה": "#F59E0B",
+  "מאפיה מעדנייה": "#84CC16",
+  "אוכל רחוב": "#10B981",
+  "מיצים ושייקים": "#3B82F6",
+  "בר": "#A855F7",
+  "גלידריה וקינוחים": "#EC4899"
+};
+function categoryColor(cat) {
+  return CATEGORY_COLORS[cat] || accentColor();
+}
+
 const DEFAULT_CENTER = [32.0853, 34.7818]; // Tel Aviv fallback
 
 // ===== State =====
@@ -63,7 +83,7 @@ async function loadPlaces() {
 // ===== Build category picker =====
 function buildCategoryGrid() {
   const grid = document.getElementById("category-grid");
-  const cats = Object.keys(CATEGORY_EMOJI).filter(c =>
+  const cats = Object.keys(CATEGORY_ICONS).filter(c =>
     ALL_PLACES.some(p => p.category === c)
   );
   grid.innerHTML = "";
@@ -71,7 +91,8 @@ function buildCategoryGrid() {
     const chip = document.createElement("div");
     chip.className = "cat-chip";
     chip.dataset.cat = cat;
-    chip.innerHTML = `<span class="emoji">${CATEGORY_EMOJI[cat] || "📍"}</span><span>${cat}</span>`;
+    chip.style.setProperty("--cat-color", categoryColor(cat));
+    chip.innerHTML = `<span class="cat-icon">${categoryIconSvg(cat, 20)}</span><span>${cat}</span>`;
     chip.addEventListener("click", () => {
       if (selectedCategories.has(cat)) {
         selectedCategories.delete(cat);
@@ -95,33 +116,59 @@ function updateFindBtn() {
 function requestLocation() {
   const status = document.getElementById("picker-status");
   if (!navigator.geolocation) {
-    status.textContent = "הדפדפן לא תומך במיקום. אפשר לבדוק על המפה באופן ידני.";
+    status.textContent = "הדפדפן לא תומך במיקום. עוברים למרכז תל אביב.";
     userLatLng = DEFAULT_CENTER;
     goToMap();
     return;
   }
+
   status.textContent = "מבקש הרשאת מיקום...";
+  let settled = false;
+
+  // Hard fallback: some in-app browsers (e.g. links opened inside WhatsApp/Instagram)
+  // silently block geolocation and never fire the browser's own success/error/timeout
+  // callbacks. This guarantees the app doesn't get stuck waiting forever.
+  const fallbackTimer = setTimeout(() => {
+    if (settled) return;
+    settled = true;
+    status.textContent = "לא הצלחנו לקבל מיקום. אם פתחת את הקישור מתוך וואטסאפ/אינסטגרם, נסו לפתוח אותו בספארי או כרום. עוברים למרכז תל אביב.";
+    userLatLng = DEFAULT_CENTER;
+    setTimeout(goToMap, 1800);
+  }, 8000);
+
   navigator.geolocation.getCurrentPosition(
     (pos) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(fallbackTimer);
       userLatLng = [pos.coords.latitude, pos.coords.longitude];
       goToMap();
     },
     (err) => {
-      status.textContent = "לא הצלחנו לקבל מיקום (" + err.message + "). מציג את מרכז תל אביב במקום.";
+      if (settled) return;
+      settled = true;
+      clearTimeout(fallbackTimer);
+      status.textContent = "לא הצלחנו לקבל מיקום (" + err.message + "). אם פתחת את הקישור מתוך וואטסאפ/אינסטגרם, נסו לפתוח אותו בספארי או כרום. עוברים למרכז תל אביב.";
       userLatLng = DEFAULT_CENTER;
-      setTimeout(goToMap, 1200);
+      setTimeout(goToMap, 1800);
     },
-    { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+    { enableHighAccuracy: true, timeout: 7000, maximumAge: 60000 }
   );
 }
 
 // ===== Map screen =====
+let hintShown = false;
+
 function goToMap() {
   document.getElementById("picker-screen").classList.add("hidden");
   document.getElementById("map-screen").classList.remove("hidden");
   if (!map) initMap();
   centerOnUser();
   renderMarkers();
+  if (!hintShown) {
+    hintShown = true;
+    setTimeout(() => showToast("💡 גררו את הסיכה או הקישו על המפה כדי לחפש במקום אחר"), 400);
+  }
 }
 
 function initMap() {
@@ -130,6 +177,19 @@ function initMap() {
     maxZoom: 19,
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
+
+  // Tap anywhere on the map to move the search center there — lets you browse
+  // spots around any location, not just where your phone's GPS says you are.
+  map.on("click", (e) => updateSearchCenter(e.latlng.lat, e.latlng.lng));
+}
+
+// Moves the search pin + radius to a new point and re-filters results from there.
+function updateSearchCenter(lat, lng) {
+  userLatLng = [lat, lng];
+  if (userMarker) userMarker.setLatLng(userLatLng);
+  if (radiusCircle) radiusCircle.setLatLng(userLatLng);
+  renderMarkers();
+  showToast("מחפשים מהמיקום שסימנתם 📍");
 }
 
 function centerOnUser() {
@@ -137,8 +197,16 @@ function centerOnUser() {
   map.setView(userLatLng, 16);
   if (userMarker) map.removeLayer(userMarker);
   userMarker = L.marker(userLatLng, {
-    icon: L.divIcon({ className: "user-pin", iconSize: [18, 18] })
+    draggable: true,
+    icon: L.divIcon({ className: "user-pin", iconSize: [24, 24] })
   }).addTo(map);
+  userMarker.on("drag", () => {
+    if (radiusCircle) radiusCircle.setLatLng(userMarker.getLatLng());
+  });
+  userMarker.on("dragend", () => {
+    const pos = userMarker.getLatLng();
+    updateSearchCenter(pos.lat, pos.lng);
+  });
 
   if (radiusCircle) map.removeLayer(radiusCircle);
   radiusCircle = L.circle(userLatLng, {
@@ -165,10 +233,9 @@ function renderMarkers() {
   }).sort((a, b) => a._distance - b._distance);
 
   matches.forEach(p => {
-    const emoji = CATEGORY_EMOJI[p.category] || "📍";
     const icon = L.divIcon({
       className: "",
-      html: `<div class="place-pin"><span>${emoji}</span></div>`,
+      html: `<div class="place-pin" style="background:${categoryColor(p.category)}"><span>${categoryIconSvg(p.category, 16)}</span></div>`,
       iconSize: [34, 34],
       iconAnchor: [17, 34]
     });
@@ -212,7 +279,6 @@ function ratingCard(key, value, count) {
 }
 
 function openDetail(p) {
-  const emoji = CATEGORY_EMOJI[p.category] || "📍";
   const dist = p._distance !== undefined
     ? formatDistance(p._distance)
     : (userLatLng ? formatDistance(haversineKm(userLatLng[0], userLatLng[1], p.lat, p.lon)) : "");
@@ -227,8 +293,11 @@ function openDetail(p) {
   const html = `
     <div class="sheet-title-row">
       <h2 class="sheet-title">${p.name}</h2>
+      <button id="sheet-share-btn-el" class="sheet-share-btn" aria-label="שיתוף">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/></svg>
+      </button>
     </div>
-    <div class="sheet-cat">${emoji} ${p.category}</div>
+    <div class="sheet-cat"><span class="cat-icon" style="color:${categoryColor(p.category)}">${categoryIconSvg(p.category, 16)}</span> ${p.category}</div>
     <div class="sheet-address">${p.address || ""}</div>
     <div class="sheet-meta-row">
       <div class="meta-pill distance">📍 ${dist}</div>
@@ -240,6 +309,52 @@ function openDetail(p) {
   document.getElementById("sheet-content").innerHTML = html;
   document.getElementById("detail-sheet").classList.remove("hidden");
   document.getElementById("sheet-backdrop").classList.remove("hidden");
+
+  const shareBtn = document.getElementById("sheet-share-btn-el");
+  if (shareBtn) shareBtn.addEventListener("click", () => sharePlace(p));
+}
+
+// ===== Share =====
+async function sharePlace(p) {
+  const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}`;
+  const wazeUrl = `https://waze.com/ul?ll=${p.lat},${p.lon}&navigate=yes`;
+  const text = [
+    `📍 ${p.name}`,
+    [p.category, p.address].filter(Boolean).join(" — "),
+    "",
+    `ניווט בגוגל מפות: ${mapsUrl}`,
+    `ניווט בוויז: ${wazeUrl}`
+  ].join("\n");
+
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: p.name, text });
+    } catch (e) {
+      // user cancelled the share sheet — nothing to do
+    }
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast("הטקסט הועתק — אפשר להדביק בוואטסאפ");
+  } catch (e) {
+    showToast("שיתוף לא נתמך במכשיר הזה");
+  }
+}
+
+function showToast(msg) {
+  let toast = document.getElementById("toast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "toast";
+    toast.className = "toast";
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.classList.add("show");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.remove("show"), 2500);
 }
 
 function closeDetail() {
@@ -266,6 +381,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   buildCategoryGrid();
 
   document.getElementById("find-btn").addEventListener("click", requestLocation);
+  document.getElementById("skip-location-btn").addEventListener("click", () => {
+    userLatLng = DEFAULT_CENTER;
+    goToMap();
+  });
   document.getElementById("back-btn").addEventListener("click", () => {
     document.getElementById("map-screen").classList.add("hidden");
     document.getElementById("picker-screen").classList.remove("hidden");

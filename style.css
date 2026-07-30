@@ -66,14 +66,25 @@ html, body {
   width: 100%;
   max-width: 460px;
 }
-.picker-inner h1 {
-  font-size: 1.6rem;
-  margin: 0 0 4px;
+.picker-inner h1.brand {
+  font-family: 'Rubik', -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-weight: 800;
+  font-size: 2.1rem;
+  letter-spacing: 0.5px;
+  text-align: center;
+  margin: 0 0 6px;
+  background: linear-gradient(90deg, var(--accent), var(--user-color));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 .subtitle {
+  font-family: 'Rubik', -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-weight: 500;
   color: var(--ink-soft);
   margin: 0 0 20px;
-  font-size: 0.95rem;
+  font-size: 1.05rem;
+  text-align: center;
 }
 
 .category-grid {
@@ -95,12 +106,20 @@ html, body {
   transition: all .15s ease;
   user-select: none;
 }
-.cat-chip .emoji { font-size: 1.3rem; }
+.cat-chip .cat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-soft);
+  flex-shrink: 0;
+}
 .cat-chip.selected {
-  border-color: var(--accent);
+  border-color: var(--cat-color, var(--accent));
   background: var(--accent-soft);
+  background: color-mix(in srgb, var(--cat-color, var(--accent)) 16%, var(--card));
   font-weight: 600;
 }
+.cat-chip.selected .cat-icon { color: var(--cat-color, var(--accent)); }
 
 .radius-row {
   display: flex;
@@ -131,13 +150,16 @@ html, body {
   border: none;
   background: var(--accent);
   color: #fff;
-  font-size: 1.05rem;
-  font-weight: 600;
+  font-family: 'Rubik', -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
   cursor: pointer;
 }
 .primary-btn:disabled {
-  background: #d8cfc4;
-  color: #8a8074;
+  background: var(--line);
+  color: var(--ink-soft);
+  opacity: 0.8;
 }
 .status-text {
   text-align: center;
@@ -145,6 +167,26 @@ html, body {
   font-size: 0.85rem;
   margin-top: 12px;
   min-height: 1.2em;
+}
+.text-link-btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  background: none;
+  border: none;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+  text-decoration: underline;
+  margin-top: 8px;
+  padding: 6px;
+  cursor: pointer;
+}
+.hint-text {
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 0.75rem;
+  margin: 10px 0 0;
+  opacity: 0.8;
 }
 
 /* ===== Map screen ===== */
@@ -213,18 +255,21 @@ html, body {
   justify-content: center;
   box-shadow: 0 2px 6px rgba(0,0,0,0.35);
   border: 2px solid var(--pin-border);
+  color: #fff;
 }
 .place-pin span {
   transform: rotate(45deg);
-  font-size: 15px;
+  display: flex;
 }
 .user-pin {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
+  margin: 2px;
   border-radius: 50%;
   background: var(--user-color);
   border: 3px solid var(--pin-border);
   box-shadow: 0 0 0 4px var(--user-glow);
+  cursor: grab;
 }
 
 /* ===== Detail bottom sheet ===== */
@@ -280,6 +325,19 @@ html, body {
   font-weight: 700;
   margin: 0;
 }
+.sheet-share-btn {
+  flex-shrink: 0;
+  border: none;
+  background: var(--bg);
+  color: var(--ink-soft);
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
 .sheet-cat {
   display: inline-flex;
   align-items: center;
@@ -287,6 +345,10 @@ html, body {
   font-size: 0.85rem;
   color: var(--ink-soft);
   margin-bottom: 10px;
+}
+.sheet-cat .cat-icon {
+  display: inline-flex;
+  align-items: center;
 }
 .sheet-address {
   font-size: 0.9rem;
@@ -369,4 +431,28 @@ html, body {
   text-decoration: none;
   font-weight: 800;
   letter-spacing: 1px;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 90px;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--ink);
+  color: var(--bg);
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+  z-index: 1000;
+  white-space: nowrap;
+  max-width: 85vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }

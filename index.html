@@ -4,6 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>TLV Spots</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#101116">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="TLV Spots">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -12,8 +23,8 @@
 <!-- ===== Screen 1: Category picker ===== -->
 <div id="picker-screen" class="screen">
   <div class="picker-inner">
-    <h1>מקומות בתל אביב</h1>
-    <p class="subtitle">מה בא לך היום?</p>
+    <h1 class="brand" dir="ltr">TLV Spots</h1>
+    <p class="subtitle">מה בא לך?</p>
 
     <div id="category-grid" class="category-grid"></div>
 
@@ -22,12 +33,15 @@
       <select id="radius-select">
         <option value="0.5" selected>0.5 ק"מ</option>
         <option value="1">1 ק"מ</option>
+        <option value="1.5">1.5 ק"מ</option>
         <option value="2">2 ק"מ</option>
       </select>
     </div>
 
-    <button id="find-btn" class="primary-btn" disabled>מצא מקומות לידי</button>
+    <button id="find-btn" class="primary-btn" disabled>יאללה</button>
     <p id="picker-status" class="status-text"></p>
+    <button id="skip-location-btn" class="text-link-btn">דלגו ובחרו מיקום ידנית במרכז תל אביב</button>
+    <p class="hint-text">💡 קיבלתם את הקישור בוואטסאפ? כדאי לפתוח בספארי/כרום כדי שהמיקום יעבוד</p>
   </div>
 </div>
 
@@ -42,6 +56,7 @@
       <select id="radius-select-2">
         <option value="0.5">0.5 ק"מ</option>
         <option value="1">1 ק"מ</option>
+        <option value="1.5">1.5 ק"מ</option>
         <option value="2">2 ק"מ</option>
       </select>
     </div>
