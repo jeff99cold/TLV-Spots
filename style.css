@@ -33,6 +33,7 @@
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+svg { display: block; }
 
 html, body {
   margin: 0;
@@ -96,7 +97,7 @@ html, body {
 .cat-chip {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: flex-start;
   padding: 12px 14px;
   border-radius: var(--radius);
   border: 1.5px solid var(--line);
@@ -112,6 +113,9 @@ html, body {
   justify-content: center;
   color: var(--ink-soft);
   flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-inline-end: 8px;
 }
 .cat-chip.selected {
   border-color: var(--cat-color, var(--accent));
@@ -157,9 +161,9 @@ html, body {
   cursor: pointer;
 }
 .primary-btn:disabled {
-  background: var(--line);
+  background: var(--card);
   color: var(--ink-soft);
-  opacity: 0.8;
+  border: 1.5px solid var(--line);
 }
 .status-text {
   text-align: center;
@@ -333,6 +337,7 @@ html, body {
   border-radius: 50%;
   width: 34px;
   height: 34px;
+  margin-top: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -341,7 +346,6 @@ html, body {
 .sheet-cat {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
   font-size: 0.85rem;
   color: var(--ink-soft);
   margin-bottom: 10px;
@@ -349,6 +353,9 @@ html, body {
 .sheet-cat .cat-icon {
   display: inline-flex;
   align-items: center;
+  width: 16px;
+  height: 16px;
+  margin-inline-end: 6px;
 }
 .sheet-address {
   font-size: 0.9rem;
@@ -383,7 +390,6 @@ html, body {
   border: 1px solid var(--line);
   display: flex;
   align-items: center;
-  gap: 10px;
 }
 .rating-card .badge {
   width: 26px;
@@ -395,6 +401,7 @@ html, body {
   justify-content: center;
   font-size: 0.8rem;
   font-weight: 700;
+  margin-inline-end: 10px;
 }
 .rating-card .rc-info { min-width: 0; }
 .rating-card .value {

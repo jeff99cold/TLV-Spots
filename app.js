@@ -64,6 +64,13 @@ function applyTimeTheme() {
   const hour = new Date().getHours();
   const isDay = hour >= 6 && hour < 19; // 06:00–19:00 = day, otherwise night
   document.documentElement.dataset.theme = isDay ? "day" : "night";
+
+  // Keep the OS status bar / browser chrome color in sync with the theme —
+  // otherwise it stays permanently dark and clashes with the light daytime page.
+  const bg = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim();
+  const meta = document.getElementById("theme-color-meta");
+  if (meta && bg) meta.setAttribute("content", bg);
+
   if (radiusCircle) {
     radiusCircle.setStyle({ color: accentColor(), fillColor: accentColor() });
   }
@@ -113,6 +120,13 @@ function updateFindBtn() {
 }
 
 // ===== Geolocation =====
+function revealLocationFallbackUI() {
+  const skipBtn = document.getElementById("skip-location-btn");
+  const hint = document.getElementById("whatsapp-hint");
+  if (skipBtn) skipBtn.classList.remove("hidden");
+  if (hint) hint.classList.remove("hidden");
+}
+
 function requestLocation() {
   const status = document.getElementById("picker-status");
   if (!navigator.geolocation) {
@@ -132,6 +146,7 @@ function requestLocation() {
     if (settled) return;
     settled = true;
     status.textContent = "לא הצלחנו לקבל מיקום. אם פתחת את הקישור מתוך וואטסאפ/אינסטגרם, נסו לפתוח אותו בספארי או כרום. עוברים למרכז תל אביב.";
+    revealLocationFallbackUI();
     userLatLng = DEFAULT_CENTER;
     setTimeout(goToMap, 1800);
   }, 8000);
@@ -149,6 +164,7 @@ function requestLocation() {
       settled = true;
       clearTimeout(fallbackTimer);
       status.textContent = "לא הצלחנו לקבל מיקום (" + err.message + "). אם פתחת את הקישור מתוך וואטסאפ/אינסטגרם, נסו לפתוח אותו בספארי או כרום. עוברים למרכז תל אביב.";
+      revealLocationFallbackUI();
       userLatLng = DEFAULT_CENTER;
       setTimeout(goToMap, 1800);
     },
@@ -294,7 +310,7 @@ function openDetail(p) {
     <div class="sheet-title-row">
       <h2 class="sheet-title">${p.name}</h2>
       <button id="sheet-share-btn-el" class="sheet-share-btn" aria-label="שיתוף">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.8"/><circle cx="6" cy="12" r="2.8"/><circle cx="18" cy="19" r="2.8"/><path d="M8.5 10.5l7-4M8.5 13.5l7 4"/></svg>
       </button>
     </div>
     <div class="sheet-cat"><span class="cat-icon" style="color:${categoryColor(p.category)}">${categoryIconSvg(p.category, 16)}</span> ${p.category}</div>
