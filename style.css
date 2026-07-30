@@ -12,6 +12,7 @@
   --user-color: #2563eb;
   --user-glow: rgba(37,99,235,0.25);
   --pin-border: #ffffff;
+  --btn-ink: #ffffff;
   --radius: 14px;
   font-size: 16px;
 }
@@ -30,6 +31,7 @@
   --user-color: #ffb84d;
   --user-glow: rgba(255,184,77,0.3);
   --pin-border: #1b1d24;
+  --btn-ink: #1a1208;
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -73,7 +75,7 @@ html, body {
   font-size: 2.1rem;
   letter-spacing: 0.5px;
   text-align: center;
-  margin: 0 0 6px;
+  margin: 0 0 12px;
   background: linear-gradient(90deg, var(--accent), var(--user-color));
   -webkit-background-clip: text;
   background-clip: text;
@@ -83,7 +85,7 @@ html, body {
   font-family: 'Rubik', -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
   font-weight: 500;
   color: var(--ink-soft);
-  margin: 0 0 20px;
+  margin: 0 0 32px;
   font-size: 1.05rem;
   text-align: center;
 }
@@ -129,7 +131,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 32px;
   font-size: 0.9rem;
   color: var(--ink-soft);
 }
@@ -153,7 +155,7 @@ html, body {
   border-radius: var(--radius);
   border: none;
   background: var(--accent);
-  color: #fff;
+  color: var(--btn-ink);
   font-family: 'Rubik', -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
   font-size: 1.15rem;
   font-weight: 700;
@@ -161,9 +163,10 @@ html, body {
   cursor: pointer;
 }
 .primary-btn:disabled {
-  background: var(--card);
-  color: var(--ink-soft);
-  border: 1.5px solid var(--line);
+  background: var(--accent);
+  color: var(--btn-ink);
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 .status-text {
   text-align: center;
@@ -191,6 +194,23 @@ html, body {
   font-size: 0.75rem;
   margin: 10px 0 0;
   opacity: 0.8;
+}
+.share-app-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+  font-family: inherit;
+  margin-top: 56px;
+  padding: 10px 6px;
+  cursor: pointer;
+}
+.share-app-btn svg {
+  margin-inline-end: 6px;
 }
 
 /* ===== Map screen ===== */
@@ -371,6 +391,7 @@ html, body {
   cursor: pointer;
   font-family: inherit;
   font-weight: 600;
+  font-size: 0.95rem;
 }
 .meta-pill.share-pill svg {
   margin-inline-end: 5px;
@@ -424,6 +445,7 @@ html, body {
   color: var(--ink);
   text-decoration: none;
   font-weight: 600;
+  font-size: 1.1rem;
   margin-bottom: 8px;
 }
 .sheet-nav-btn {

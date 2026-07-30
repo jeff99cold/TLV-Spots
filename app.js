@@ -399,6 +399,29 @@ async function sharePlace(p) {
   }
 }
 
+// Shares the app itself (not a specific spot) — used by the button at the
+// bottom of the picker screen.
+async function shareApp() {
+  const appUrl = "https://jeff99cold.github.io/TLV-Spots/";
+  const text = ["גלו מקומות לאכול ולשתות בתל אביב עם TLV Spots 📍", appUrl].join("\n");
+
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: "TLV Spots", text, url: appUrl });
+    } catch (e) {
+      // user cancelled the share sheet — nothing to do
+    }
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast("הקישור הועתק — אפשר להדביק בוואטסאפ");
+  } catch (e) {
+    showToast("שיתוף לא נתמך במכשיר הזה");
+  }
+}
+
 function showToast(msg) {
   let toast = document.getElementById("toast");
   if (!toast) {
@@ -454,6 +477,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("back-btn").addEventListener("click", () => {
     document.getElementById("map-screen").classList.add("hidden");
     document.getElementById("picker-screen").classList.remove("hidden");
+    // Clear any leftover "requesting location..." status text from the
+    // original GPS request — it has no reason to still be shown once we're
+    // back editing filters with a location already established.
+    document.getElementById("picker-status").textContent = "";
   });
   document.getElementById("locate-btn").addEventListener("click", () => {
     requestLocation();
@@ -462,4 +489,5 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("radius-select-2").addEventListener("change", (e) => setRadius(e.target.value));
   document.getElementById("sheet-close").addEventListener("click", closeDetail);
   document.getElementById("sheet-backdrop").addEventListener("click", closeDetail);
+  document.getElementById("share-app-btn").addEventListener("click", shareApp);
 });
