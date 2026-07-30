@@ -290,17 +290,17 @@ html, body {
   font-weight: 600;
   cursor: pointer;
 }
-.add-spot-open-maps {
-  display: block;
-  width: 100%;
-  padding: 13px;
-  margin: 6px 0 22px;
-  font-size: 0.95rem;
+.add-spot-fallback-label {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  margin: 26px 0 8px;
 }
 .spot-paste-area {
   resize: vertical;
-  min-height: 76px;
+  min-height: 56px;
   line-height: 1.4;
+  margin-top: 8px;
 }
 .add-spot-paste-btn {
   display: block;
@@ -309,7 +309,27 @@ html, body {
   margin: 8px 0 4px;
 }
 .add-spot-submit {
-  margin-top: 24px;
+  margin-top: 20px;
+}
+.add-spot-optional {
+  margin-top: 32px;
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+.add-spot-optional summary {
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  cursor: pointer;
+  list-style: none;
+}
+.add-spot-optional summary::-webkit-details-marker { display: none; }
+.add-spot-optional summary::before { content: "+ "; }
+.add-spot-optional[open] summary::before { content: "− "; }
+.add-spot-optional-btn {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin: 12px 0 8px;
 }
 
 /* ===== Map screen ===== */

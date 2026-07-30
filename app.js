@@ -462,10 +462,16 @@ function closeAddSpotScreen() {
   document.getElementById("picker-screen").classList.remove("hidden");
 }
 
-// Just opens Google Maps to search there directly — Maps' own search is
-// better than anything we'd build, so there's no point duplicating it.
+// Opens Google Maps already searched for whatever name was typed — using the
+// "api=1&query=" deep-link format, which (unlike a generic maps.google.com
+// link) reliably lands straight on the matching place's card instead of a
+// blank map, so there's no need to type the name again once inside Maps.
 function openGoogleMaps() {
-  window.open("https://www.google.com/maps", "_blank", "noopener");
+  const query = document.getElementById("spot-search-input").value.trim();
+  const url = query
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`
+    : "https://www.google.com/maps";
+  window.open(url, "_blank", "noopener");
 }
 
 // One-tap paste from the clipboard, instead of long-pressing the field and
@@ -509,6 +515,11 @@ function parsePastedSpot(raw) {
 // The shared data (title/text/url) arrives as query params on page load.
 // (This isn't supported by iOS Safari — there's no PWA share-target API on
 // iOS — so the paste-box flow above stays in place as a fallback there.)
+// If the data does arrive via Web Share Target (Android, app installed), it's
+// treated purely as a nice bonus that pre-fills the fields — never a required
+// step. The name goes straight into the main required field, and a link (if
+// present) is dropped into the optional "got a link?" section, which is
+// auto-expanded so the user can see it was captured.
 function handleIncomingShare() {
   const params = new URLSearchParams(window.location.search);
   const sharedTitle = params.get("shared_title") || "";
@@ -526,20 +537,31 @@ function handleIncomingShare() {
 
   document.getElementById("picker-screen").classList.add("hidden");
   document.getElementById("add-spot-screen").classList.remove("hidden");
-  document.getElementById("spot-paste-input").value = [name, mapsUrl].filter(Boolean).join("\n");
+  document.getElementById("spot-search-input").value = name;
+  if (mapsUrl) {
+    document.getElementById("spot-paste-input").value = mapsUrl;
+    const details = document.querySelector(".add-spot-optional");
+    if (details) details.open = true;
+  }
 
   return true;
 }
 
+// The only thing a user must actually do is type a name (+ rough area) and
+// tap send — everything else (opening Maps to double-check, pasting a link)
+// is optional. DJ looks up the exact address/details by hand from the name
+// when reviewing submissions, same as with a link.
 async function submitNewSpot() {
-  const raw = document.getElementById("spot-paste-input").value.trim();
+  const name = document.getElementById("spot-search-input").value.trim();
   const status = document.getElementById("add-spot-status");
-  const { url, name } = parsePastedSpot(raw);
 
-  if (!url) {
-    status.textContent = "לא מצאנו קישור בטקסט שהדבקתם";
+  if (!name) {
+    status.textContent = "כתבו קודם את שם המקום";
     return;
   }
+
+  const raw = document.getElementById("spot-paste-input").value.trim();
+  const url = extractFirstUrl(raw);
 
   const submitBtn = document.getElementById("spot-submit-btn");
   submitBtn.disabled = true;
@@ -549,8 +571,8 @@ async function submitNewSpot() {
   formData.append("name_guess", name);
   formData.append("maps_url", url);
   formData.append("raw_paste", raw);
-  formData.append("_subject", `new spot for spots${name ? " - " + name : ""}`);
-  formData.append("message", `שם משוער: ${name || "לא זוהה"}\nקישור מגוגל מפות: ${url}\n\nמה שהודבק במקור:\n${raw}`);
+  formData.append("_subject", `new spot for spots - ${name}`);
+  formData.append("message", `שם משוער: ${name}\nקישור מגוגל מפות: ${url || "לא צורף"}\n\nמה שהודבק (אם הודבק):\n${raw || "-"}`);
 
   try {
     const response = await fetch(SPOT_SUBMIT_ENDPOINT, {
@@ -560,6 +582,7 @@ async function submitNewSpot() {
     });
     if (response.ok) {
       status.textContent = "תודה! נבדוק ונוסיף בקרוב 🙌";
+      document.getElementById("spot-search-input").value = "";
       document.getElementById("spot-paste-input").value = "";
       setTimeout(closeAddSpotScreen, 1600);
     } else {
