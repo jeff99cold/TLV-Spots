@@ -9,8 +9,8 @@
   --line: #e5e7eb;
   --green: #16a34a;
   --red: #dc2626;
-  --user-color: #2563eb;
-  --user-glow: rgba(37,99,235,0.25);
+  --user-color: #06b6d4;
+  --user-glow: rgba(6,182,212,0.25);
   --pin-border: #ffffff;
   --btn-ink: #ffffff;
   --radius: 14px;
@@ -28,8 +28,8 @@
   --line: #2b2d36;
   --green: #34d399;
   --red: #f87171;
-  --user-color: #ffb84d;
-  --user-glow: rgba(255,184,77,0.3);
+  --user-color: #22d3ee;
+  --user-glow: rgba(34,211,238,0.3);
   --pin-border: #1b1d24;
   --btn-ink: #1a1208;
 }
