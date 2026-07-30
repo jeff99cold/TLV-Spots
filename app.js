@@ -450,7 +450,7 @@ function closeDetail() {
 // Submissions are relayed through Formspree (a free static-site form-to-email
 // service) since this app has no backend of its own. Replace the placeholder
 // below with your real Formspree endpoint (formspree.io) once you've created one.
-const SPOT_SUBMIT_ENDPOINT = "https://formspree.io/f/REPLACE_WITH_YOUR_FORM_ID";
+const SPOT_SUBMIT_ENDPOINT = "https://formspree.io/f/xrenvqyz";
 
 function openAddSpotScreen() {
   document.getElementById("picker-screen").classList.add("hidden");
