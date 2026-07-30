@@ -462,22 +462,82 @@ function closeAddSpotScreen() {
   document.getElementById("picker-screen").classList.remove("hidden");
 }
 
-function searchSpotOnMaps() {
-  const query = document.getElementById("spot-search-input").value.trim();
-  if (!query) return;
-  window.open(`https://www.google.com/maps/search/${encodeURIComponent(query)}`, "_blank", "noopener");
+// Just opens Google Maps to search there directly — Maps' own search is
+// better than anything we'd build, so there's no point duplicating it.
+function openGoogleMaps() {
+  window.open("https://www.google.com/maps", "_blank", "noopener");
+}
+
+// One-tap paste from the clipboard, instead of long-pressing the field and
+// picking "Paste" from the popup menu. Falls back silently if the browser
+// blocks clipboard reads (e.g. no permission) — the user can still long-press
+// and paste manually.
+async function pasteFromClipboard() {
+  const field = document.getElementById("spot-paste-input");
+  try {
+    const clip = await navigator.clipboard.readText();
+    if (clip) field.value = clip;
+  } catch (e) {
+    // clipboard read blocked — user can still paste manually into the field
+  }
+}
+
+// Pulls whatever the user pasted (name, address, link — all mixed together,
+// exactly what "Share → Copy" gives you from Google Maps) and separates out
+// the URL from a name guess, so they never have to type or match anything
+// into separate boxes.
+function extractFirstUrl(str) {
+  if (!str) return "";
+  const match = str.match(/https?:\/\/\S+/);
+  return match ? match[0] : "";
+}
+
+function parsePastedSpot(raw) {
+  const url = extractFirstUrl(raw);
+  const nameGuess = raw
+    .split("\n")
+    .map(line => line.trim())
+    .find(line => line && !line.startsWith("http")) || "";
+  return { url, name: nameGuess };
+}
+
+// ===== Receiving a share from the Google Maps app (no copy/paste needed) =====
+// TLV Spots is registered as a Web Share Target in manifest.json. On Android,
+// once the app is installed to the home screen, it shows up as an option in
+// the native share sheet — so instead of copying a link out of Google Maps,
+// the user can just tap Share on a place there and pick "TLV Spots" directly.
+// The shared data (title/text/url) arrives as query params on page load.
+// (This isn't supported by iOS Safari — there's no PWA share-target API on
+// iOS — so the paste-box flow above stays in place as a fallback there.)
+function handleIncomingShare() {
+  const params = new URLSearchParams(window.location.search);
+  const sharedTitle = params.get("shared_title") || "";
+  const sharedText = params.get("shared_text") || "";
+  const sharedUrl = params.get("shared_url") || "";
+
+  if (!sharedTitle && !sharedText && !sharedUrl) return false;
+
+  const mapsUrl = sharedUrl || extractFirstUrl(sharedText);
+  const name = sharedTitle || sharedText.split("\n")[0] || "";
+
+  // Clean the shared params out of the address bar so a page refresh doesn't
+  // try to re-populate/resubmit the same shared spot.
+  window.history.replaceState({}, "", window.location.pathname);
+
+  document.getElementById("picker-screen").classList.add("hidden");
+  document.getElementById("add-spot-screen").classList.remove("hidden");
+  document.getElementById("spot-paste-input").value = [name, mapsUrl].filter(Boolean).join("\n");
+
+  return true;
 }
 
 async function submitNewSpot() {
-  // Only the Google Maps link is required — we deliberately don't make the
-  // user retype the name/address by hand. Whoever reviews the email opens
-  // the link and fills in the rest later.
-  const query = document.getElementById("spot-search-input").value.trim();
-  const url = document.getElementById("spot-url-input").value.trim();
+  const raw = document.getElementById("spot-paste-input").value.trim();
   const status = document.getElementById("add-spot-status");
+  const { url, name } = parsePastedSpot(raw);
 
   if (!url) {
-    status.textContent = "נא להדביק את הקישור מגוגל מפות";
+    status.textContent = "לא מצאנו קישור בטקסט שהדבקתם";
     return;
   }
 
@@ -486,10 +546,11 @@ async function submitNewSpot() {
   status.textContent = "שולח...";
 
   const formData = new FormData();
-  formData.append("search_term", query);
+  formData.append("name_guess", name);
   formData.append("maps_url", url);
-  formData.append("_subject", `new spot for spots${query ? " - " + query : ""}`);
-  formData.append("message", `מה שחיפשו: ${query || "לא צויין"}\nקישור מגוגל מפות: ${url}`);
+  formData.append("raw_paste", raw);
+  formData.append("_subject", `new spot for spots${name ? " - " + name : ""}`);
+  formData.append("message", `שם משוער: ${name || "לא זוהה"}\nקישור מגוגל מפות: ${url}\n\nמה שהודבק במקור:\n${raw}`);
 
   try {
     const response = await fetch(SPOT_SUBMIT_ENDPOINT, {
@@ -499,8 +560,7 @@ async function submitNewSpot() {
     });
     if (response.ok) {
       status.textContent = "תודה! נבדוק ונוסיף בקרוב 🙌";
-      document.getElementById("spot-search-input").value = "";
-      document.getElementById("spot-url-input").value = "";
+      document.getElementById("spot-paste-input").value = "";
       setTimeout(closeAddSpotScreen, 1600);
     } else {
       status.textContent = "משהו השתבש — נסו שוב בעוד רגע";
@@ -529,6 +589,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   await loadPlaces();
   buildCategoryGrid();
+  handleIncomingShare();
 
   document.getElementById("find-btn").addEventListener("click", () => {
     // If we already have a location (real GPS or a manually-moved pin from a
@@ -563,6 +624,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("share-app-btn").addEventListener("click", shareApp);
   document.getElementById("add-spot-btn").addEventListener("click", openAddSpotScreen);
   document.getElementById("add-spot-close").addEventListener("click", closeAddSpotScreen);
-  document.getElementById("spot-search-btn").addEventListener("click", searchSpotOnMaps);
+  document.getElementById("spot-open-maps-btn").addEventListener("click", openGoogleMaps);
+  document.getElementById("spot-paste-btn").addEventListener("click", pasteFromClipboard);
   document.getElementById("spot-submit-btn").addEventListener("click", submitNewSpot);
 });

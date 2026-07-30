@@ -60,16 +60,13 @@
   <div class="add-spot-inner">
     <button id="add-spot-close" class="sheet-close" aria-label="סגור">✕</button>
     <h2 class="add-spot-title">הוספת מקום חדש</h2>
-    <p class="add-spot-subtitle">חפשו את המקום בגוגל מפות, ודאו שזה הוא, והדביקו כאן את הקישור</p>
+    <p class="add-spot-subtitle">מצאו את המקום בגוגל מפות, לחצו שיתוף ואז העתקה, וחזרו לכאן</p>
 
-    <label class="field-label" for="spot-search-input">חיפוש בגוגל מפות</label>
-    <div class="search-assist-row">
-      <input id="spot-search-input" type="text" placeholder="לדוגמה: קפה נטע, אבן גבירול">
-      <button id="spot-search-btn" class="search-assist-btn">חפשו במפות</button>
-    </div>
+    <button id="spot-open-maps-btn" class="search-assist-btn add-spot-open-maps">פתחו את גוגל מפות</button>
 
-    <label class="field-label" for="spot-url-input">קישור מגוגל מפות</label>
-    <input id="spot-url-input" class="field-input" type="url" placeholder="https://maps.google.com/...">
+    <label class="field-label" for="spot-paste-input">הדביקו כאן את מה שהעתקתם</label>
+    <textarea id="spot-paste-input" class="field-input spot-paste-area" rows="3" placeholder="הדביקו כאן — שם המקום והקישור שהעתקתם מגוגל מפות"></textarea>
+    <button id="spot-paste-btn" class="search-assist-btn add-spot-paste-btn">הדבק מהלוח</button>
 
     <button id="spot-submit-btn" class="primary-btn add-spot-submit">שליחה</button>
     <p id="add-spot-status" class="status-text"></p>
