@@ -17,13 +17,13 @@
 }
 
 :root[data-theme="night"] {
-  /* Night theme — dark, neon accents */
+  /* Night theme — dark, warm accents */
   --bg: #101116;
   --card: #1b1d24;
   --ink: #f2f2f5;
   --ink-soft: #9a9aa8;
-  --accent: #ff5fa2;
-  --accent-soft: #3a2030;
+  --accent: #ff8a3d;
+  --accent-soft: #3d2712;
   --line: #2b2d36;
   --green: #34d399;
   --red: #f87171;
@@ -245,6 +245,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #f97316;
 }
 
 /* ===== Leaflet pin styling ===== */
@@ -369,6 +370,10 @@ html, body {
   color: var(--ink-soft);
   cursor: pointer;
   font-family: inherit;
+  font-weight: 600;
+}
+.meta-pill.share-pill svg {
+  margin-inline-end: 5px;
 }
 
 .ratings-grid {
@@ -415,8 +420,8 @@ html, body {
   text-align: center;
   padding: 14px;
   border-radius: var(--radius);
-  background: var(--ink);
-  color: #fff;
+  background: var(--line);
+  color: var(--ink);
   text-decoration: none;
   font-weight: 600;
   margin-bottom: 8px;

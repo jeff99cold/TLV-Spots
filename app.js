@@ -352,11 +352,12 @@ function openDetail(p) {
       <div class="meta-pill distance">📍 ${dist}</div>
       <button id="sheet-share-btn-el" class="meta-pill share-pill" aria-label="שיתוף">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.8"/><circle cx="6" cy="12" r="2.8"/><circle cx="18" cy="19" r="2.8"/><path d="M8.5 10.5l7-4M8.5 13.5l7 4"/></svg>
+        <span>שחרר</span>
       </button>
     </div>
     ${ratingsHtml ? `<div class="ratings-grid">${ratingsHtml}</div>` : ""}
-    ${p.link ? `<a class="sheet-link-btn" href="${normalizeUrl(p.link)}" target="_blank" rel="noopener">חיבור</a>` : ""}
-    <a class="sheet-nav-btn" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}" target="_blank" rel="noopener">יאללללה</a>
+    ${p.link ? `<a class="sheet-link-btn" href="${normalizeUrl(p.link)}" target="_blank" rel="noopener">חַבֵּר</a>` : ""}
+    <a class="sheet-nav-btn" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}" target="_blank" rel="noopener">יָאלללָה</a>
   `;
   document.getElementById("sheet-content").innerHTML = html;
   document.getElementById("detail-sheet").classList.remove("hidden");
@@ -435,7 +436,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadPlaces();
   buildCategoryGrid();
 
-  document.getElementById("find-btn").addEventListener("click", requestLocation);
+  document.getElementById("find-btn").addEventListener("click", () => {
+    // If we already have a location (real GPS or a manually-moved pin from a
+    // previous search), reuse it — only fetch fresh GPS the very first time.
+    // Otherwise editing filters/distance and tapping יאללה again would snap
+    // the pin back to the phone's GPS and discard the moved location.
+    if (userLatLng) {
+      goToMap();
+    } else {
+      requestLocation();
+    }
+  });
   document.getElementById("skip-location-btn").addEventListener("click", () => {
     userLatLng = DEFAULT_CENTER;
     goToMap();
