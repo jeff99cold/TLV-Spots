@@ -78,7 +78,29 @@ function applyTimeTheme() {
 
 function normalizeUrl(url) {
   if (!url) return null;
-  return /^https?:\/\//i.test(url) ? url : "https://" + url;
+  const trimmed = String(url).trim();
+  // Explicitly reject anything that isn't a plain http(s) link — blocks
+  // javascript:/data:/vbscript: etc. schemes from ever ending up in an href.
+  // (The https:// prefix below already made this safe by accident, but this
+  // makes the protection deliberate instead of incidental.)
+  if (/^[a-z][a-z0-9+.-]*:/i.test(trimmed) && !/^https?:\/\//i.test(trimmed)) {
+    return null;
+  }
+  return /^https?:\/\//i.test(trimmed) ? trimmed : "https://" + trimmed;
+}
+
+// Escapes user-visible text before it's inserted as HTML — defense in depth
+// in case a venue name/address in places.json ever contained HTML-special
+// characters (a copy-paste mistake, stray "<", etc.), so it always renders as
+// plain text rather than being parsed as markup.
+function escapeHtml(str) {
+  if (str === null || str === undefined) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 // ===== Load data =====
@@ -342,12 +364,14 @@ function openDetail(p) {
     ratingCard("easy", p.easy_score, p.easy_count)
   ].filter(Boolean).join("");
 
+  const safeLink = p.link ? normalizeUrl(p.link) : null;
+
   const html = `
     <div class="sheet-title-row">
-      <h2 class="sheet-title">${p.name}</h2>
+      <h2 class="sheet-title">${escapeHtml(p.name)}</h2>
     </div>
-    <div class="sheet-cat"><span class="cat-icon" style="color:${categoryColor(p.category)}">${categoryIconSvg(p.category, 16)}</span> ${p.category}</div>
-    <div class="sheet-address">${p.address || ""}</div>
+    <div class="sheet-cat"><span class="cat-icon" style="color:${categoryColor(p.category)}">${categoryIconSvg(p.category, 16)}</span> ${escapeHtml(p.category)}</div>
+    <div class="sheet-address">${escapeHtml(p.address || "")}</div>
     <div class="sheet-meta-row">
       <div class="meta-pill distance">📍 ${dist}</div>
       <button id="sheet-share-btn-el" class="meta-pill share-pill" aria-label="שיתוף">
@@ -356,7 +380,7 @@ function openDetail(p) {
       </button>
     </div>
     ${ratingsHtml ? `<div class="ratings-grid">${ratingsHtml}</div>` : ""}
-    ${p.link ? `<a class="sheet-link-btn" href="${normalizeUrl(p.link)}" target="_blank" rel="noopener">חַבֵּר</a>` : ""}
+    ${safeLink ? `<a class="sheet-link-btn" href="${safeLink}" target="_blank" rel="noopener">חַבֵּר</a>` : ""}
     <a class="sheet-nav-btn" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}" target="_blank" rel="noopener">יָאלללָה</a>
   `;
   document.getElementById("sheet-content").innerHTML = html;
