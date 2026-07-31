@@ -507,6 +507,31 @@ function parsePastedSpot(raw) {
   return { url, name: nameGuess };
 }
 
+// Only links on an actual Google domain are ever forwarded to DJ's inbox.
+// This is a personal spot-suggestion box, not a general link box — someone
+// could paste (accidentally or on purpose) an unrelated malicious link, or
+// craft a fake "share" URL to this app with a bad link baked into the
+// shared_url param. Either way, anything that isn't google.com/goo.gl gets
+// silently dropped rather than relayed as a clickable link in an email.
+const TRUSTED_LINK_HOSTS = ["google.com", "goo.gl", "g.co"];
+function isTrustedMapsUrl(url) {
+  if (!url) return false;
+  try {
+    const host = new URL(url).hostname.toLowerCase();
+    return TRUSTED_LINK_HOSTS.some(h => host === h || host.endsWith("." + h));
+  } catch (e) {
+    return false;
+  }
+}
+
+// Removes a rejected (untrusted) URL from the raw pasted text before it's
+// sent anywhere, so no arbitrary link ever leaves the client even inside the
+// free-text "what was pasted" field.
+function scrubUntrustedUrl(raw, rawUrl, trusted) {
+  if (!rawUrl || trusted) return raw;
+  return raw.split(rawUrl).join("[קישור הוסר - לא זוהה כדומיין גוגל]");
+}
+
 // ===== Receiving a share from the Google Maps app (no copy/paste needed) =====
 // TLV Spots is registered as a Web Share Target in manifest.json. On Android,
 // once the app is installed to the home screen, it shows up as an option in
@@ -528,7 +553,8 @@ function handleIncomingShare() {
 
   if (!sharedTitle && !sharedText && !sharedUrl) return false;
 
-  const mapsUrl = sharedUrl || extractFirstUrl(sharedText);
+  const rawMapsUrl = sharedUrl || extractFirstUrl(sharedText);
+  const mapsUrl = isTrustedMapsUrl(rawMapsUrl) ? rawMapsUrl : "";
   const name = sharedTitle || sharedText.split("\n")[0] || "";
 
   // Clean the shared params out of the address bar so a page refresh doesn't
@@ -561,7 +587,10 @@ async function submitNewSpot() {
   }
 
   const raw = document.getElementById("spot-paste-input").value.trim();
-  const url = extractFirstUrl(raw);
+  const rawUrl = extractFirstUrl(raw);
+  const trusted = isTrustedMapsUrl(rawUrl);
+  const url = trusted ? rawUrl : "";
+  const linkWasRejected = rawUrl && !trusted;
 
   const submitBtn = document.getElementById("spot-submit-btn");
   submitBtn.disabled = true;
@@ -570,9 +599,13 @@ async function submitNewSpot() {
   const formData = new FormData();
   formData.append("name_guess", name);
   formData.append("maps_url", url);
-  formData.append("raw_paste", raw);
+  formData.append("raw_paste", scrubUntrustedUrl(raw, rawUrl, trusted));
   formData.append("_subject", `new spot for spots - ${name}`);
-  formData.append("message", `שם משוער: ${name}\nקישור מגוגל מפות: ${url || "לא צורף"}\n\nמה שהודבק (אם הודבק):\n${raw || "-"}`);
+  // Keep the "message" field free of a raw link — spam filters (including
+  // Formspree's Formshield) score plain-text URLs in the message body highly,
+  // which caused real submissions to land in Spam instead of the inbox. The
+  // actual link still comes through fine in its own named field (maps_url).
+  formData.append("message", `שם משוער: ${name}\n${url ? "יש קישור מגוגל מפות מצורף למטה (שדה נפרד)" : "לא צורף קישור"}`);
 
   try {
     const response = await fetch(SPOT_SUBMIT_ENDPOINT, {
@@ -581,7 +614,9 @@ async function submitNewSpot() {
       body: formData
     });
     if (response.ok) {
-      status.textContent = "תודה! נבדוק ונוסיף בקרוב 🙌";
+      status.textContent = linkWasRejected
+        ? "תודה! (הקישור שהודבק לא זוהה כקישור גוגל מפות ולכן לא נשלח) 🙌"
+        : "תודה! נבדוק ונוסיף בקרוב 🙌";
       document.getElementById("spot-search-input").value = "";
       document.getElementById("spot-paste-input").value = "";
       setTimeout(closeAddSpotScreen, 1600);
