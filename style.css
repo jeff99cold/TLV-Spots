@@ -604,3 +604,12 @@ html, body {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+
+.sheet-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.sheet-row.sheet-address{margin-bottom:14px}
+.sheet-row .sheet-cat{margin-bottom:0}
+.info-link{font-size:.85rem;color:#2f5fe0;text-decoration:none;white-space:nowrap}
+.info-hours{margin-inline-start:auto;font-size:.85rem;color:var(--ink-soft);white-space:nowrap}
+.info-ico{vertical-align:-2px;margin-inline-end:4px}
+.info-link{display:inline-flex;align-items:center}
+.info-hours .info-ico{margin-inline-end:0;margin-inline-start:4px}

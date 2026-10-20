@@ -1,4 +1,12 @@
 // ===== Config =====
+// Per-deployment settings. This app is deployed more than once (this original
+// TLV Spots copy, plus a personalized copy for Keren) from the same code —
+// this block is the ONLY thing that differs between deployments. Every other
+// fix or feature in this file applies to all deployments with one edit.
+const APP_NAME = "TLV Spots";
+const PLACES_SOURCE = "places.json"; // this deployment owns the place data
+const SHARE_URL = "https://tinyurl.com/tlv-spots-app";
+
 // Minimal line-icon paths (24x24 viewBox) per category — rendered with currentColor
 // so they pick up the chip/pin/theme color automatically.
 const CATEGORY_ICONS = {
@@ -105,8 +113,8 @@ function escapeHtml(str) {
 
 // ===== Load data =====
 async function loadPlaces() {
-  const res = await fetch("places.json");
-  ALL_PLACES = await res.json();
+  const res = await fetch(PLACES_SOURCE);
+  ALL_PLACES = (await res.json()).filter(p => p.status !== "closed");
 }
 
 // ===== Build category picker =====
@@ -339,6 +347,32 @@ const RATING_BADGES = {
   easy:   { letter: "E", bg: "#8B5CF6", fg: "#ffffff" }
 };
 
+
+const HE_DAYS = ["ראשון","שני","שלישי","רביעי","חמישי","שישי","שבת"];
+const DAY_KEYS = ["sun","mon","tue","wed","thu","fri","sat"];
+const PHONE_SVG = `<svg class="info-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>`;
+const CLOCK_SVG = `<svg class="info-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>`;
+function todayHoursText(p) {
+  if (!p.hours) return "";
+  const i = new Date().getDay();
+  const v = p.hours[DAY_KEYS[i]];
+  if (!v) return "";
+  const fmt = t => t.replace(/^0/, "").replace(/^24:00$/, "0:00");
+  const txt = v === "closed" ? "סגור" : `<span dir="ltr">${v.split(",").map(r => r.split("-").map(fmt).join(" - ")).join(" · ")}</span>`;
+  return HE_DAYS[i] + " " + txt;
+}
+function phoneHtml(p) {
+  return p.phone ? `<a class="info-link" href="tel:${p.phone.replace(/[^\d+]/g, "")}" dir="ltr">${PHONE_SVG} ${escapeHtml(p.phone)}</a>` : "";
+}
+function websiteHtml(p) {
+  const u = p.website ? normalizeUrl(p.website) : null;
+  return u ? `<a class="info-link" href="${u}" target="_blank" rel="noopener" dir="ltr">🌐 ${escapeHtml(p.website.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, ""))}</a>` : "";
+}
+function hoursHtml(p) {
+  const ht = todayHoursText(p);
+  return ht ? `<span class="info-hours">${ht}${CLOCK_SVG}</span>` : "";
+}
+
 function ratingCard(key, value, count) {
   if (value === null || value === undefined || value === "") return "";
   const b = RATING_BADGES[key];
@@ -370,14 +404,15 @@ function openDetail(p) {
     <div class="sheet-title-row">
       <h2 class="sheet-title">${escapeHtml(p.name)}</h2>
     </div>
-    <div class="sheet-cat"><span class="cat-icon" style="color:${categoryColor(p.category)}">${categoryIconSvg(p.category, 16)}</span> ${escapeHtml(p.category)}</div>
-    <div class="sheet-address">${escapeHtml(p.address || "")}</div>
+    <div class="sheet-row"><div class="sheet-cat"><span class="cat-icon" style="color:${categoryColor(p.category)}">${categoryIconSvg(p.category, 16)}</span> ${escapeHtml(p.category)}</div>${phoneHtml(p)}</div>
+    <div class="sheet-row sheet-address"><span>${escapeHtml(p.address || "")}</span>${websiteHtml(p)}</div>
     <div class="sheet-meta-row">
       <div class="meta-pill distance">📍 ${dist}</div>
       <button id="sheet-share-btn-el" class="meta-pill share-pill" aria-label="שיתוף">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.8"/><circle cx="6" cy="12" r="2.8"/><circle cx="18" cy="19" r="2.8"/><path d="M8.5 10.5l7-4M8.5 13.5l7 4"/></svg>
         <span>שחרר</span>
       </button>
+      ${hoursHtml(p)}
     </div>
     ${ratingsHtml ? `<div class="ratings-grid">${ratingsHtml}</div>` : ""}
     ${safeLink ? `<a class="sheet-link-btn" href="${safeLink}" target="_blank" rel="noopener">חַבֵּר</a>` : ""}
@@ -428,15 +463,15 @@ async function sharePlace(p) {
 async function shareApp() {
   // A short redirect link instead of the raw GitHub Pages URL, so the
   // username/host isn't visible when someone shares the app.
-  const appUrl = "https://tinyurl.com/tlv-spots-app";
-  const shareText = "שששש... לא מספרים על TLV Spots";
+  const appUrl = SHARE_URL;
+  const shareText = `שששש... לא מספרים על ${APP_NAME}`;
 
   if (navigator.share) {
     try {
       // Pass the URL only via the dedicated `url` field, not inside `text` too —
       // WhatsApp (and some other share targets) append the url field on its own
       // line, so including it in text as well made the link show up twice.
-      await navigator.share({ title: "TLV Spots", text: shareText, url: appUrl });
+      await navigator.share({ title: APP_NAME, text: shareText, url: appUrl });
     } catch (e) {
       // user cancelled the share sheet — nothing to do
     }
