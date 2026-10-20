@@ -631,3 +631,7 @@ html, body {
 .sheet-title-row .info-status{flex:1;justify-content:center;display:inline-flex;align-items:center;font-size:.9rem}
 .sheet-title-row{position:relative}
 .sheet-title-row .info-status{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);flex:none;pointer-events:none;font-size:.95rem}
+.sheet-title-row .info-status{position:static;transform:none}
+.sheet-status-row{display:flex;justify-content:center;margin:-4px 0 8px}
+.sheet-status-row .info-status{font-size:.95rem}
+#detail-sheet .sheet-close{width:42px;height:42px;font-size:1.25rem;top:8px;left:12px}

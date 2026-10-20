@@ -414,8 +414,9 @@ function openDetail(p) {
   const safeLink = p.link ? normalizeUrl(p.link) : null;
 
   const html = `
+    ${statusHtml(p) ? `<div class="sheet-status-row">${statusHtml(p)}</div>` : ""}
     <div class="sheet-title-row">
-      <h2 class="sheet-title">${escapeHtml(p.name)}</h2>${statusHtml(p)}
+      <h2 class="sheet-title">${escapeHtml(p.name)}</h2>
     </div>
     <div class="sheet-row"><div class="sheet-cat"><span class="cat-icon" style="color:${categoryColor(p.category)}">${categoryIconSvg(p.category, 16)}</span> ${escapeHtml(p.category)}</div>${phoneHtml(p)}</div>
     <div class="sheet-row sheet-address"><span>${escapeHtml(shortAddress(p.address))}</span>${websiteHtml(p)}</div>
