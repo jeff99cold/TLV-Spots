@@ -113,7 +113,7 @@ function escapeHtml(str) {
 
 // ===== Load data =====
 async function loadPlaces() {
-  const res = await fetch(PLACES_SOURCE);
+  const res = await fetch(PLACES_SOURCE + "?v=" + Date.now());
   ALL_PLACES = (await res.json()).filter(p => p.status !== "closed");
 }
 
