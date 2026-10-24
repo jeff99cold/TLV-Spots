@@ -1282,7 +1282,8 @@
   "easy_count": null,
   "link": "https://www.google.com/maps/place/Nuweiba/@32.0605801,34.7682778,18.75z/data=!4m16!1m9!3m8!1s0x151d4d542684e785:0xca758960a3358893!2sNuweiba!8m2!3d32.0607257!4d34.7694049!9m1!1b1!16s%2Fg%2F11rfn1f28q?entry=ttu",
   "lat": 32.0543931,
-  "lon": 34.7607369
+  "lon": 34.7607369,
+  "status": "unsuitable"
  },
  {
   "id": 47,
@@ -1954,7 +1955,8 @@
    "thu": "07:00-20:30",
    "fri": "07:00-18:00",
    "sat": "07:00-20:30"
-  }
+  },
+  "status": "unsuitable"
  },
  {
   "id": 72,
@@ -9039,7 +9041,8 @@
    "thu": "07:00-19:00",
    "fri": "07:00-15:00",
    "sat": "closed"
-  }
+  },
+  "status": "unsuitable"
  },
  {
   "id": 307,
@@ -10759,7 +10762,8 @@
    "fri": "06:00-14:00",
    "sat": "06:00-14:00"
   },
-  "name_en": "Cafe Ruth"
+  "name_en": "Cafe Ruth",
+  "status": "unsuitable"
  },
  {
   "id": 364,
@@ -11840,7 +11844,8 @@
   "easy_count": null,
   "link": "https://www.google.com/maps/search/%D7%97%D7%A6%D7%A8%20%D7%99%D7%99%D7%9F%20%D7%AA%D7%95%D7%91%D7%9C%202%2C%20%D7%AA%D7%9C%20%D7%90%D7%91%D7%99%D7%91",
   "lat": 32.070214,
-  "lon": 34.794121
+  "lon": 34.794121,
+  "status": "unsuitable"
  },
  {
   "id": 400,
@@ -12888,7 +12893,8 @@
    "thu": "10:30-18:00",
    "fri": "11:00-16:00",
    "sat": "closed"
-  }
+  },
+  "status": "unsuitable"
  },
  {
   "id": 436,
@@ -13767,7 +13773,8 @@
    "thu": "07:00-20:00",
    "fri": "07:00-17:00",
    "sat": "07:00-20:00"
-  }
+  },
+  "status": "unsuitable"
  },
  {
   "id": 465,
@@ -13850,7 +13857,8 @@
    "fri": "07:30-16:30",
    "sat": "closed"
   },
-  "name_en": "Zeit Für Brot"
+  "name_en": "Zeit Für Brot",
+  "status": "unsuitable"
  },
  {
   "id": 468,
@@ -14960,7 +14968,8 @@
    "fri": "12:00-17:00",
    "sat": "closed"
   },
-  "name_en": "Cafe Boca"
+  "name_en": "Cafe Boca",
+  "status": "unsuitable"
  },
  {
   "id": 911,
