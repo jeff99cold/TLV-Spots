@@ -1110,7 +1110,8 @@
    "sun": "08:00-24:00",
    "mon": "08:00-24:00"
   },
-  "name_en": "Mirage"
+  "name_en": "Mirage",
+  "status": "unsuitable"
  },
  {
   "id": 41,
@@ -1673,7 +1674,8 @@
    "fri": "11:00-24:00",
    "sat": "11:00-24:00"
   },
-  "name_en": "Cantina San Remo"
+  "name_en": "Cantina San Remo",
+  "status": "unsuitable"
  },
  {
   "id": 62,
@@ -3072,7 +3074,8 @@
    "thu": "12:00-22:00",
    "fri": "12:00-22:00",
    "sat": "12:00-22:00"
-  }
+  },
+  "status": "unsuitable"
  },
  {
   "id": 109,
@@ -3134,7 +3137,8 @@
    "fri": "08:30-00:00",
    "sat": "09:30-23:00"
   },
-  "name_en": "Otello"
+  "name_en": "Otello",
+  "status": "unsuitable"
  },
  {
   "id": 111,
@@ -4570,7 +4574,8 @@
    "fri": "09:00-14:00",
    "sat": "closed"
   },
-  "name_en": "Greg Cafe"
+  "name_en": "Greg Cafe",
+  "status": "unsuitable"
  },
  {
   "id": 158,
@@ -4938,7 +4943,8 @@
    "fri": "12:00-16:00",
    "sat": "19:30-23:00"
   },
-  "name_en": "Avazi"
+  "name_en": "Avazi",
+  "status": "unsuitable"
  },
  {
   "id": 170,
@@ -5292,7 +5298,8 @@
    "fri": "10:00-23:00",
    "sat": "10:00-23:00"
   },
-  "name_en": "Pasta via Ben Avigdor"
+  "name_en": "Pasta via Ben Avigdor",
+  "status": "unsuitable"
  },
  {
   "id": 183,
@@ -6616,7 +6623,8 @@
    "thu": "10:00-22:00",
    "fri": "09:00-15:00",
    "sat": "closed"
-  }
+  },
+  "status": "unsuitable"
  },
  {
   "id": 226,
@@ -8182,7 +8190,8 @@
    "fri": "18:00-01:00",
    "sat": "18:00-01:00"
   },
-  "name_en": "SPICEHAUS BAR"
+  "name_en": "SPICEHAUS BAR",
+  "status": "unsuitable"
  },
  {
   "id": 278,
@@ -8275,7 +8284,8 @@
    "fri": "21:00-03:00",
    "sat": "20:30-03:00"
   },
-  "name_en": "GOAT TLV"
+  "name_en": "GOAT TLV",
+  "status": "unsuitable"
  },
  {
   "id": 281,
@@ -8305,7 +8315,8 @@
    "fri": "21:00-03:00",
    "sat": "20:30-03:00"
   },
-  "name_en": "Supreme Room"
+  "name_en": "Supreme Room",
+  "status": "unsuitable"
  },
  {
   "id": 282,
@@ -8397,7 +8408,8 @@
    "fri": "22:00-05:00",
    "sat": "22:00-05:00"
   },
-  "name_en": "Shalvata TLV"
+  "name_en": "Shalvata TLV",
+  "status": "unsuitable"
  },
  {
   "id": 285,
@@ -8459,7 +8471,8 @@
    "fri": "22:00-05:00",
    "sat": "22:00-05:00"
   },
-  "name_en": "JIMMYWHO? Bar & Lounge"
+  "name_en": "JIMMYWHO? Bar & Lounge",
+  "status": "unsuitable"
  },
  {
   "id": 287,
@@ -8613,7 +8626,8 @@
    "fri": "closed",
    "sat": "closed"
   },
-  "name_en": "Malka by Eyal Shani"
+  "name_en": "Malka by Eyal Shani",
+  "status": "unsuitable"
  },
  {
   "id": 292,
@@ -8905,7 +8919,8 @@
    "thu": "11:00-17:00",
    "fri": "11:00-15:00",
    "sat": "closed"
-  }
+  },
+  "status": "unsuitable"
  },
  {
   "id": 302,
@@ -9657,7 +9672,8 @@
    "fri": "08:30-16:00",
    "sat": "09:30-16:00"
   },
-  "name_en": "Wild bar cafe"
+  "name_en": "Wild bar cafe",
+  "status": "unsuitable"
  },
  {
   "id": 328,
@@ -9996,7 +10012,8 @@
    "thu": "08:00-21:00",
    "fri": "08:00-17:30",
    "sat": "09:00-20:00"
-  }
+  },
+  "status": "unsuitable"
  },
  {
   "id": 339,
@@ -10086,7 +10103,8 @@
    "thu": "08:00-18:00",
    "fri": "08:00-16:00",
    "sat": "09:00-16:00"
-  }
+  },
+  "status": "unsuitable"
  },
  {
   "id": 342,
@@ -10165,7 +10183,8 @@
   "easy_count": 6272,
   "link": "https://www.google.com/maps/search/%D7%A9%D7%99%D7%9C%D7%94%20%D7%A7%D7%A4%D7%94%20%D7%9E%D7%95%D7%A0%D7%98%D7%99%D7%A4%D7%99%D7%95%D7%A8%D7%99%2011%2C%20%D7%AA%D7%9C%20%D7%90%D7%91%D7%99%D7%91",
   "lat": 32.064924,
-  "lon": 34.770251
+  "lon": 34.770251,
+  "status": "unsuitable"
  },
  {
   "id": 345,
@@ -11803,7 +11822,8 @@
    "fri": "17:00-23:00",
    "sat": "16:00-23:00"
   },
-  "name_en": "Trattoria Una"
+  "name_en": "Trattoria Una",
+  "status": "unsuitable"
  },
  {
   "id": 399,
@@ -12499,7 +12519,8 @@
    "fri": "08:00-16:00",
    "sat": "closed"
   },
-  "name_en": "Dr Shakshuka"
+  "name_en": "Dr Shakshuka",
+  "status": "unsuitable"
  },
  {
   "id": 422,
@@ -12653,7 +12674,8 @@
    "fri": "09:00-21:00",
    "sat": "09:00-21:00"
   },
-  "name_en": "Falafel Atsir"
+  "name_en": "Falafel Atsir",
+  "status": "unsuitable"
  },
  {
   "id": 428,
@@ -13229,7 +13251,8 @@
    "thu": "11:00-23:00",
    "fri": "10:00-23:00",
    "sat": "10:00-23:00"
-  }
+  },
+  "status": "unsuitable"
  },
  {
   "id": 448,

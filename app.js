@@ -114,7 +114,7 @@ function escapeHtml(str) {
 // ===== Load data =====
 async function loadPlaces() {
   const res = await fetch(PLACES_SOURCE + "?v=" + Date.now());
-  ALL_PLACES = (await res.json()).filter(p => p.status !== "closed");
+  ALL_PLACES = (await res.json()).filter(p => p.status !== "closed" && p.status !== "unsuitable");
 }
 
 // ===== Build category picker =====
@@ -406,7 +406,7 @@ function openDetail(p) {
 
   const ratingsHtml = [
     ratingCard("google", p.google_rating, p.google_count),
-    ratingCard("wolt", p.wolt, null),
+    ratingCard("wolt", p.wolt, p.wolt_count),
     ratingCard("ta", p.ta_score, p.ta_count),
     ratingCard("easy", p.easy_score, p.easy_count)
   ].filter(Boolean).join("");
